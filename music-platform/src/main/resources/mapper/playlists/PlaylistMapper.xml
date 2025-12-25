@@ -101,4 +101,17 @@
         WHERE id = #{id}
     </update>
 
+    <!-- 统计用户创建的歌单数（不含默认歌单） -->
+    <select id="countUserPlaylists" resultType="int">
+        SELECT COUNT(*) FROM sys_playlist
+        WHERE user_id = #{userId} AND is_default = 0
+    </select>
+
+    <!-- 获取用户喜欢的歌曲数（i_like歌单中的song_count） -->
+    <select id="getLikedSongCount" resultType="java.lang.Integer">
+        SELECT IFNULL(song_count, 0) FROM sys_playlist
+        WHERE user_id = #{userId} AND playlist_type = 'i_like'
+            LIMIT 1
+    </select>
+
 </mapper>

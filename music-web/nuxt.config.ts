@@ -12,9 +12,11 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    '/api/**': {
-      proxy: 'http://localhost:8080/**',
-      proxyMaxBodySize: 314572800
+    devProxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      }
     }
   }
 })

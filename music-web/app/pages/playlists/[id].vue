@@ -234,13 +234,6 @@ const defaultCover = 'https://images.unsplash.com/photo-1493225255756-d9584f8606
 
 // 判断是否为歌单拥有者
 const isOwner = computed(() => {
-    console.log('=== isOwner 调试 ===')
-    console.log('playlist.value:', playlist.value)
-    console.log('playlist.value?.userId:', playlist.value?.userId, typeof playlist.value?.userId)
-    console.log('currentUserId.value:', currentUserId.value, typeof currentUserId.value)
-    console.log('相等判断:', playlist.value?.userId === currentUserId.value)
-    console.log('==================')
-
     if (!playlist.value || !currentUserId.value) return false
     return playlist.value.userId === currentUserId.value
 })
@@ -459,8 +452,6 @@ const playAll = () => {
 
     // ✅ 设置播放列表并从第一首开始播放
     playerStore.setPlaylist(songs.value, 0)
-
-    console.log(`开始播放歌单：${playlist.value?.name}，共 ${songs.value.length} 首歌曲`)
 }
 
 // ✅ 新增：播放单首歌曲
@@ -471,7 +462,6 @@ const playSong = (song: Song) => {
     }
 
     playerStore.play(song)
-    console.log(`正在播放：${song.title} - ${song.artist}`)
 }
 
 // 格式化时长
@@ -491,10 +481,8 @@ const formatDate = (dateStr?: string) => {
 // 获取当前用户ID (简化处理)
 const checkCurrentUser = () => {
     const token = getToken()
-    console.log('🔑 Token 原始值:', token)
 
     if (!token) {
-        console.log('❌ Token 为空')
         currentUserId.value = null
         return
     }
@@ -502,21 +490,15 @@ const checkCurrentUser = () => {
     try {
         const payload = token.split('.')[1]
         if (!payload) {
-            console.log('❌ Token payload 为空')
             currentUserId.value = null
             return
         }
 
         const decoded = JSON.parse(atob(payload))
 
-        // ✅ 关键：打印完整的 Token payload
-        console.log('📦 Token 完整 payload:', decoded)
-        console.log('📦 可用字段:', Object.keys(decoded))
 
-        // 尝试多个可能的字段名
         currentUserId.value = decoded.userId || decoded.id || decoded.uid || decoded.sub || null
 
-        console.log('✅ 解析后的用户ID:', currentUserId.value, typeof currentUserId.value)
     } catch (error) {
         console.error('❌ 解析 Token 失败:', error)
         currentUserId.value = null

@@ -1,12 +1,15 @@
-package com.intomusic.musicplatform.modules.user.model.entity;
+package com.intomusic.musicplatform.modules.user.model.vo;
 
 import lombok.Data;
 import java.time.LocalDateTime;
 
-@Data // 关键注解：自动生成 getters, setters, toString
-public class User {
+/**
+ * 用户详情视图对象
+ */
+@Data
+public class UserDetailVO {
     /**
-     * 主键ID
+     * 用户ID
      */
     private Long id;
 
@@ -16,17 +19,12 @@ public class User {
     private String username;
 
     /**
-     * 密码
-     */
-    private String password;
-
-    /**
      * 昵称
      */
     private String nickname;
 
     /**
-     * 头像
+     * 头像URL
      */
     private String avatar;
 
@@ -36,7 +34,7 @@ public class User {
     private String bio;
 
     /**
-     * 创建时间
+     * 注册时间
      */
     private LocalDateTime createTime;
 }

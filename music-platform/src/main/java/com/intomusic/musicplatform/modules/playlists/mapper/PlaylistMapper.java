@@ -53,4 +53,14 @@ public interface PlaylistMapper {
      * 增加播放次数
      */
     int incrementPlayCount(@Param("id") Long id);
+
+    /**
+     * 统计用户创建的歌单数（不含默认歌单）
+     */
+    int countUserPlaylists(@Param("userId") Long userId);
+
+    /**
+     * 获取用户喜欢的歌曲数（i_like歌单中的song_count）
+     */
+    Integer getLikedSongCount(@Param("userId") Long userId);
 }

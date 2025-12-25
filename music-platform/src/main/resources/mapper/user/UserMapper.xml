@@ -3,14 +3,48 @@
 <mapper namespace="com.intomusic.musicplatform.modules.user.mapper.UserMapper">
 
     <select id="selectByUsername" resultType="User">
-        SELECT id, username, password, nickname, avatar, create_time
+        SELECT id, username, password, nickname, avatar, bio, create_time
         FROM sys_user
         WHERE username = #{username}
+    </select>
+
+    <select id="selectById" resultType="User">
+        SELECT id, username, password, nickname, avatar, bio, create_time
+        FROM sys_user
+        WHERE id = #{id}
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO sys_user (username, password, nickname, avatar, create_time)
         VALUES (#{username}, #{password}, #{nickname}, #{avatar}, NOW())
     </insert>
+
+    <update id="update">
+        UPDATE sys_user
+        <set>
+            <if test="nickname != null and nickname != ''">
+                nickname = #{nickname},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="bio != null">
+                bio = #{bio},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateAvatar">
+        UPDATE sys_user
+        SET avatar = #{avatar}
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateBio">
+        UPDATE sys_user
+        SET bio = #{bio}
+        WHERE id = #{id}
+    </update>
 
 </mapper>
