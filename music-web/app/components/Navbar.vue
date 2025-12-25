@@ -145,18 +145,45 @@ const navItems = [
     { name: '上传音乐', path: '/upload' },
 ]
 
-const checkLoginStatus = () => {
+const checkLoginStatus = async () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
     isLoggedIn.value = !!token
 
-    // ⭐ 新增：如果已登录，获取用户信息
+    // ⭐ 如果已登录，从后端获取最新用户信息
     if (token) {
-        const storedUserInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo')
-        if (storedUserInfo) {
-            try {
-                userInfo.value = JSON.parse(storedUserInfo)
-            } catch (e) {
-                console.error('解析用户信息失败:', e)
+        try {
+            const response = await $fetch<{
+                code: number
+                data: {
+                    username: string
+                    nickname: string
+                    avatar: string
+                }
+            }>('/api/user/me', {
+                headers: { 'Authorization': token }
+            })
+
+            if (response.code === 200 && response.data) {
+                userInfo.value = {
+                    username: response.data.username,
+                    nickname: response.data.nickname,
+                    avatar: response.data.avatar || '/defaultAvatar.png'
+                }
+
+                // 可选：更新本地存储
+                const storage = localStorage.getItem('token') ? localStorage : sessionStorage
+                storage.setItem('userInfo', JSON.stringify(userInfo.value))
+            }
+        } catch (error) {
+            console.error('获取用户信息失败:', error)
+            // 降级：尝试从本地存储读取
+            const storedUserInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo')
+            if (storedUserInfo) {
+                try {
+                    userInfo.value = JSON.parse(storedUserInfo)
+                } catch (e) {
+                    console.error('解析用户信息失败:', e)
+                }
             }
         }
     } else {
@@ -193,5 +220,6 @@ const handleSearch = () => {
 onMounted(() => {
     checkLoginStatus()
     window.addEventListener('storage', checkLoginStatus)
+    window.addEventListener('userInfoUpdated', checkLoginStatus)
 })
 </script>
