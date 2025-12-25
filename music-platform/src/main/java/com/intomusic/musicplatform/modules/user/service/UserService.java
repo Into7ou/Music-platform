@@ -45,6 +45,7 @@ public class UserService {
         User user = new User();
         user.setUsername(req.getUsername());
         user.setNickname(req.getNickname());  // 使用前端传来的昵称
+        user.setAvatar("/defaultAvatar.png"); // 设置默认头像
 
         // 4. 密码加密处理
         String hashedPassword = BCrypt.hashpw(req.getPassword(), BCrypt.gensalt());
