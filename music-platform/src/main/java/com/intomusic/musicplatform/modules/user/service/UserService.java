@@ -36,26 +36,27 @@ public class UserService {
             return Result.error("用户名已存在");
         }
 
-        // 2. 准备入库对象
+        // 2. 校验昵称不能为空
+        if (req.getNickname() == null || req.getNickname().trim().isEmpty()) {
+            return Result.error("昵称不能为空");
+        }
+
+        // 3. 准备入库对象
         User user = new User();
         user.setUsername(req.getUsername());
-        user.setNickname("用户" + System.currentTimeMillis() % 1000); // 默认随机昵称
+        user.setNickname(req.getNickname());  // 使用前端传来的昵称
 
-        // --- 密码处理逻辑 (当前：明文) ---
-        // TODO: 后期只需在这里改为: String encoded = BCrypt.hashpw(req.getPassword(), ...);
+        // 4. 密码加密处理
         String hashedPassword = BCrypt.hashpw(req.getPassword(), BCrypt.gensalt());
         user.setPassword(hashedPassword);
-        // -----------------------------
 
-        // 3. 写入数据库
+        // 5. 写入数据库
         userMapper.insert(user);
 
-        // 4. 自动创建默认歌单 (i_like)
+        // 6. 自动创建默认歌单 (i_like)
         try {
             playlistService.createDefaultPlaylist(user.getId());
         } catch (Exception e) {
-            // 如果创建默认歌单失败，记录日志但不影响注册流程
-            // 可以选择抛出异常回滚整个注册，或者只记录日志继续
             throw new RuntimeException("创建默认歌单失败: " + e.getMessage(), e);
         }
 
