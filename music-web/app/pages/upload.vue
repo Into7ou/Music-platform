@@ -8,8 +8,6 @@
 
                 <form @submit.prevent="handleSubmit" class="flex flex-col gap-5">
 
-                    <!-- 音频文件上传 -->
-                    <!-- 音频文件上传 - 支持多文件 -->
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-medium text-gray-300">
                             音频文件 <span class="text-red-400">*</span>
@@ -18,7 +16,6 @@
                             </span>
                         </label>
 
-                        <!-- 文件选择按钮 -->
                         <div class="file-input-wrapper">
                             <input type="file" ref="audioFileInput" accept="audio/*" multiple
                                 @change="handleMultipleAudioSelected" class="hidden" />
@@ -30,7 +27,6 @@
                             </button>
                         </div>
 
-                        <!-- 已选文件列表预览 -->
                         <div v-if="songList.length > 0" class="mt-3 space-y-2 max-h-40 overflow-y-auto">
                             <div v-for="(song, index) in songList" :key="song.id"
                                 class="flex items-center gap-3 p-2 rounded-lg bg-[#0a0f1d]/40 border border-white/5">
@@ -45,7 +41,6 @@
                         </div>
                     </div>
 
-                    <!-- 歌曲列表编辑区 -->
                     <div v-if="songList.length > 0" class="space-y-4 mt-6">
                         <div class="flex items-center justify-between border-b border-white/10 pb-3">
                             <h2 class="text-lg font-semibold text-white">
@@ -57,12 +52,10 @@
                             </button>
                         </div>
 
-                        <!-- 歌曲卡片列表 -->
                         <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                             <div v-for="(song, index) in songList" :key="song.id"
                                 class="p-5 rounded-xl bg-[#0a0f1d]/40 border border-white/10 hover:border-white/20 transition-all">
 
-                                <!-- 卡片头部 -->
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center gap-3">
                                         <span class="text-lg font-bold text-blue-400">{{ index + 1 }}</span>
@@ -77,9 +70,7 @@
                                     </button>
                                 </div>
 
-                                <!-- 元数据表单 -->
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- 歌曲标题 -->
                                     <div class="flex flex-col gap-2">
                                         <label class="text-xs font-medium text-gray-400">
                                             歌曲标题 <span class="text-red-400">*</span>
@@ -88,21 +79,18 @@
                                             class="form-input-small w-full px-3 py-2 rounded-lg outline-none text-sm" />
                                     </div>
 
-                                    <!-- 歌手 -->
                                     <div class="flex flex-col gap-2">
                                         <label class="text-xs font-medium text-gray-400">歌手</label>
                                         <input v-model="song.metadata.artist" type="text" placeholder="请输入歌手名称"
                                             class="form-input-small w-full px-3 py-2 rounded-lg outline-none text-sm" />
                                     </div>
 
-                                    <!-- 专辑 -->
                                     <div class="flex flex-col gap-2">
                                         <label class="text-xs font-medium text-gray-400">专辑</label>
                                         <input v-model="song.metadata.album" type="text" placeholder="请输入专辑名称"
                                             class="form-input-small w-full px-3 py-2 rounded-lg outline-none text-sm" />
                                     </div>
 
-                                    <!-- 流派 -->
                                     <div class="flex flex-col gap-2">
                                         <label class="text-xs font-medium text-gray-400">流派</label>
                                         <select v-model="song.metadata.genre"
@@ -120,11 +108,9 @@
                                     </div>
                                 </div>
 
-                                <!-- 封面上传 -->
                                 <div class="flex flex-col gap-2 mt-4">
                                     <label class="text-xs font-medium text-gray-400">封面图片</label>
                                     <div class="flex items-center gap-3">
-                                        <!-- 封面预览 -->
                                         <div v-if="song.coverPreview"
                                             class="relative w-16 h-16 rounded-lg overflow-hidden border border-white/20">
                                             <img :src="song.coverPreview" class="w-full h-full object-cover" />
@@ -134,7 +120,6 @@
                                             </button>
                                         </div>
 
-                                        <!-- 上传按钮 -->
                                         <div v-if="!song.coverPreview" class="flex-1">
                                             <input type="file" :ref="`coverInput-${song.id}`" accept="image/*"
                                                 @change="handleCoverSelected(song.id, $event)" class="hidden" />
@@ -152,7 +137,6 @@
                     </div>
 
 
-                    <!-- 提交按钮 -->
                     <button type="submit"
                         class="submit-btn w-full py-3.5 mt-4 rounded-xl text-white font-semibold text-lg shadow-lg shadow-indigo-500/30 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95 transition-all"
                         :disabled="isUploading">
@@ -172,7 +156,6 @@ definePageMeta({
     layout: false
 })
 
-// 歌曲上传项接口
 interface SongUploadItem {
     id: string
     audioFile: File
@@ -189,29 +172,24 @@ interface SongUploadItem {
     error: string | null
 }
 
-// 歌曲列表
 const songList = ref<SongUploadItem[]>([])
 const audioFileInput = ref<HTMLInputElement | null>(null)
 const isUploading = ref(false)
 
-// 生成唯一 ID
 const generateId = () => {
     return `song-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 }
 
-// 从文件名提取歌曲标题（去除扩展名）
 const extractTitleFromFilename = (filename: string): string => {
     return filename.replace(/\.[^/.]+$/, '')
 }
 
-// 处理多文件选择
 const handleMultipleAudioSelected = (event: Event) => {
     const input = event.target as HTMLInputElement
     const files = input.files
 
     if (!files || files.length === 0) return
 
-    // 转换为歌曲上传项
     const newSongs: SongUploadItem[] = Array.from(files).map(file => ({
         id: generateId(),
         audioFile: file,
@@ -230,11 +208,9 @@ const handleMultipleAudioSelected = (event: Event) => {
 
     songList.value.push(...newSongs)
 
-    // 清空 input，允许重复选择相同文件
     input.value = ''
 }
 
-// 移除单首歌曲
 const removeSong = (songId: string) => {
     const song = songList.value.find(s => s.id === songId)
     if (song?.coverPreview) {
@@ -243,11 +219,9 @@ const removeSong = (songId: string) => {
     songList.value = songList.value.filter(s => s.id !== songId)
 }
 
-// 清空所有歌曲
 const clearAllSongs = () => {
     if (!confirm('确定要清空所有歌曲吗？')) return
 
-    // 释放所有封面预览 URL
     songList.value.forEach(song => {
         if (song.coverPreview) {
             URL.revokeObjectURL(song.coverPreview)
@@ -257,7 +231,6 @@ const clearAllSongs = () => {
     songList.value = []
 }
 
-// 处理封面选择
 const handleCoverSelected = (songId: string, event: Event) => {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
@@ -267,7 +240,6 @@ const handleCoverSelected = (songId: string, event: Event) => {
     const song = songList.value.find(s => s.id === songId)
     if (!song) return
 
-    // 释放旧的预览 URL
     if (song.coverPreview) {
         URL.revokeObjectURL(song.coverPreview)
     }
@@ -275,11 +247,9 @@ const handleCoverSelected = (songId: string, event: Event) => {
     song.coverFile = file
     song.coverPreview = URL.createObjectURL(file)
 
-    // 清空 input
     input.value = ''
 }
 
-// 移除封面
 const removeCover = (songId: string) => {
     const song = songList.value.find(s => s.id === songId)
     if (!song) return
@@ -292,14 +262,12 @@ const removeCover = (songId: string) => {
     song.coverPreview = null
 }
 
-// 验证表单
 const validateForm = (): boolean => {
     if (songList.value.length === 0) {
         alert('请至少选择一个音频文件')
         return false
     }
 
-    // 检查每首歌是否有标题
     const invalidSongs = songList.value.filter(song => !song.metadata.title.trim())
     if (invalidSongs.length > 0) {
         alert('请为所有歌曲填写标题')
@@ -309,7 +277,6 @@ const validateForm = (): boolean => {
     return true
 }
 
-// 提交上传
 const handleSubmit = async () => {
     if (!validateForm()) return
 
@@ -319,7 +286,6 @@ const handleSubmit = async () => {
         let successCount = 0
         let failCount = 0
 
-        // 串行上传每首歌
         for (const song of songList.value) {
             song.status = 'uploading'
 
@@ -357,10 +323,8 @@ const handleSubmit = async () => {
             }
         }
 
-        // 显示结果
         if (failCount === 0) {
             alert(`上传成功！\n成功: ${successCount} 首`)
-            // 清空列表
             clearAllSongs()
         } else {
             alert(`上传完成！\n成功: ${successCount} 首\n失败: ${failCount} 首\n\n失败的歌曲已标记为红色`)
@@ -375,19 +339,13 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-/* * 玻璃拟态卡片增强 
- * 覆盖部分 Tailwind 无法简单实现的复杂效果
- */
 .upload-card {
     background: rgba(13, 20, 35, 0.4);
-    /* 更深、更透明的背景 */
     backdrop-filter: blur(40px);
-    /* 极强的模糊 */
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
         0 20px 50px rgba(0, 0, 0, 0.5),
         inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    /* 内发光 */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -397,7 +355,6 @@ const handleSubmit = async () => {
         inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
-/* 标题渐变 */
 .upload-title {
     background: linear-gradient(135deg, #a5b4fc 0%, #e0c3fc 100%);
     -webkit-background-clip: text;
@@ -406,7 +363,6 @@ const handleSubmit = async () => {
     text-shadow: 0 0 20px rgba(165, 180, 252, 0.3);
 }
 
-/* 输入框深度定制 */
 .form-input {
     background: rgba(0, 0, 0, 0.2) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -417,7 +373,6 @@ const handleSubmit = async () => {
 .form-input:focus {
     background: rgba(0, 0, 0, 0.4) !important;
     border-color: #818cf8 !important;
-    /* Indigo-400 */
     box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15) !important;
 }
 
@@ -425,7 +380,6 @@ const handleSubmit = async () => {
     color: rgba(255, 255, 255, 0.3);
 }
 
-/* 提交按钮流光效果 */
 .submit-btn {
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     position: relative;
@@ -448,9 +402,6 @@ const handleSubmit = async () => {
     opacity: 1;
 }
 
-/* 覆盖 FileInput 组件内部的 file-selector-button 样式 
- * 使用深度选择器 :deep() 穿透到子组件
- */
 :deep(.file-input)::file-selector-button {
     background: rgba(255, 255, 255, 0.1) !important;
     color: #c7d2fe !important;
@@ -463,7 +414,6 @@ const handleSubmit = async () => {
     color: #fff !important;
 }
 
-/* 小号输入框样式 */
 .form-input-small {
     background: rgba(0, 0, 0, 0.2) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -482,6 +432,3 @@ const handleSubmit = async () => {
     font-size: 0.875rem;
 }
 </style>
-
-<!-- Source: upload.vue -->
-```

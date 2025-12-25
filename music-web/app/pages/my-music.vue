@@ -2,7 +2,6 @@
     <AuroraBackground class="min-h-screen w-full bg-[#050A14] block">
         <div class="relative z-10 w-full min-h-screen pt-24 pb-32 px-4 lg:px-8 max-w-7xl mx-auto space-y-12">
 
-            <!-- 1. 页面头部 -->
             <div
                 class="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 border-b border-white/5 pb-6">
                 <div class="space-y-2">
@@ -21,7 +20,6 @@
                 </button>
             </div>
 
-            <!-- 未登录提示 -->
             <div v-if="!isLoggedIn" class="flex flex-col items-center justify-center py-32 space-y-6">
                 <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-4xl mb-2">🔒</div>
                 <p class="text-gray-400 text-lg">请登录以访问您的云端歌单</p>
@@ -32,17 +30,14 @@
             </div>
 
             <template v-else>
-                <!-- 加载状态 -->
                 <div v-if="isLoading" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                     <div v-for="i in 5" :key="i" class="h-64 bg-white/5 rounded-2xl animate-pulse"></div>
                 </div>
 
                 <template v-else>
-                    <!-- 2. 我喜欢的音乐 (特色 Banner) -->
                     <section v-if="defaultPlaylist"
                         class="group relative w-full overflow-hidden rounded-3xl border border-white/10 cursor-pointer"
                         @click="navigateToPlaylist(defaultPlaylist.id)">
-                        <!-- 动态渐变背景 -->
                         <div
                             class="absolute inset-0 bg-gradient-to-r from-pink-900/80 via-purple-900/60 to-[#050A14] transition-all duration-500 group-hover:scale-105">
                         </div>
@@ -52,7 +47,6 @@
 
                         <div class="relative z-10 p-8 md:p-10 flex items-center justify-between">
                             <div class="flex items-center gap-8">
-                                <!-- 封面 -->
                                 <div
                                     class="relative w-28 h-28 md:w-32 md:h-32 rounded-2xl overflow-hidden shadow-2xl border border-white/20 group-hover:rotate-3 transition-transform duration-500">
                                     <img :src="defaultPlaylist.coverUrl || 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=400'"
@@ -61,7 +55,6 @@
                                         <span class="text-4xl text-white drop-shadow-md">❤</span>
                                     </div>
                                 </div>
-                                <!-- 文字 -->
                                 <div class="space-y-2">
                                     <h2
                                         class="text-3xl font-black text-white group-hover:text-pink-200 transition-colors">
@@ -76,7 +69,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- 播放按钮 (仅大屏显示) -->
                             <div
                                 class="hidden md:flex w-16 h-16 rounded-full border-2 border-white/20 items-center justify-center group-hover:bg-white group-hover:border-white transition-all duration-300">
                                 <span
@@ -85,7 +77,6 @@
                         </div>
                     </section>
 
-                    <!-- 3. 自定义歌单列表 -->
                     <section class="space-y-6">
                         <div class="flex items-center justify-between px-1">
                             <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -96,7 +87,6 @@
                                 customPlaylists.length }} PLAYLISTS</span>
                         </div>
 
-                        <!-- 无歌单状态 -->
                         <div v-if="customPlaylists.length === 0"
                             class="flex flex-col items-center justify-center py-20 border-2 border-dashed border-white/10 rounded-3xl bg-white/[0.02]">
                             <div class="text-6xl mb-4 opacity-50">📂</div>
@@ -107,7 +97,6 @@
                             </button>
                         </div>
 
-                        <!-- 歌单网格 -->
                         <div v-else class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6">
                             <PlaylistCard v-for="playlist in customPlaylists" :key="playlist.id" :playlist="playlist" />
                         </div>
@@ -115,7 +104,6 @@
                 </template>
             </template>
 
-            <!-- 4. 创建歌单弹窗 (MyGO Style) -->
             <Transition name="fade">
                 <div v-if="showCreateModal"
                     class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
@@ -123,14 +111,12 @@
 
                     <div
                         class="bg-[#151925] rounded-3xl w-full max-w-lg border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden transform transition-all">
-                        <!-- 弹窗 Header -->
                         <div class="bg-gradient-to-r from-blue-900/20 to-transparent p-6 border-b border-white/5">
                             <h3 class="text-2xl font-bold text-white">Create Playlist</h3>
                             <p class="text-sm text-gray-500 mt-1">给你的新收藏起个名字吧</p>
                         </div>
 
                         <form @submit.prevent="handleCreatePlaylist" class="p-8 space-y-6">
-                            <!-- 歌单名称 -->
                             <div class="space-y-2 group">
                                 <label
                                     class="text-xs font-bold text-gray-400 uppercase tracking-wider group-focus-within:text-blue-400 transition-colors">Name</label>
@@ -139,7 +125,6 @@
                                     required />
                             </div>
 
-                            <!-- 歌单描述 -->
                             <div class="space-y-2 group">
                                 <label
                                     class="text-xs font-bold text-gray-400 uppercase tracking-wider group-focus-within:text-blue-400 transition-colors">Description</label>
@@ -147,7 +132,6 @@
                                     class="w-full bg-[#0a0f1d] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-600 focus:border-blue-500/50 focus:bg-[#0a0f1d]/80 outline-none transition-all resize-none"></textarea>
                             </div>
 
-                            <!-- 是否公开开关 -->
                             <div
                                 class="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
                                 <div class="flex flex-col">
@@ -158,7 +142,6 @@
                                     class="toggle toggle-info toggle-sm" />
                             </div>
 
-                            <!-- 按钮组 -->
                             <div class="flex gap-4 pt-4">
                                 <button type="button" @click="showCreateModal = false"
                                     class="flex-1 btn btn-ghost text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
@@ -183,14 +166,11 @@ import { ref, computed, onMounted } from 'vue'
 import type { Playlist, PlaylistCreateReq, Result } from '~/types/music'
 import PlaylistCard from '~/components/PlaylistCard.vue'
 
-// 登录状态
 const isLoggedIn = ref(false)
 const isLoading = ref(true)
 
-// 歌单数据
 const playlists = ref<Playlist[]>([])
 
-// 筛选默认歌单和自定义歌单
 const defaultPlaylist = computed(() =>
     playlists.value.find(p => p.isDefault === 1)
 )
@@ -198,7 +178,6 @@ const customPlaylists = computed(() =>
     playlists.value.filter(p => p.isDefault !== 1)
 )
 
-// 创建歌单相关
 const showCreateModal = ref(false)
 const isCreating = ref(false)
 const createForm = ref<{ name: string; description: string; isPublic: boolean }>({
@@ -207,14 +186,11 @@ const createForm = ref<{ name: string; description: string; isPublic: boolean }>
     isPublic: false
 })
 
-// 获取 Token (简化逻辑)
 const getToken = (): string => {
-    // 优先检查 window 是否存在，避免 SSR 报错
     if (typeof window === 'undefined') return ''
     return localStorage.getItem('token') || sessionStorage.getItem('token') || ''
 }
 
-// 获取我的歌单列表
 const fetchMyPlaylists = async () => {
     const token = getToken()
     if (!token) {
@@ -241,7 +217,6 @@ const fetchMyPlaylists = async () => {
     }
 }
 
-// 创建歌单
 const handleCreatePlaylist = async () => {
     if (!createForm.value.name.trim()) return
     isCreating.value = true
@@ -263,7 +238,6 @@ const handleCreatePlaylist = async () => {
             createForm.value = { name: '', description: '', isPublic: false }
             showCreateModal.value = false
         } else {
-            // 这里可以换成 Toast 组件
             alert(response.msg || '创建失败')
         }
     } catch (error) {
@@ -284,7 +258,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 弹窗淡入淡出 */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.3s ease;

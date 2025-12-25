@@ -49,9 +49,7 @@
                                     <p class="text-blue-300/50 text-sm">注册 MoonDrop 账号</p>
                                 </div>
 
-                                <!-- 表单区域 -->
                                 <div class="space-y-5 w-full">
-                                    <!-- 账号输入 -->
                                     <div class="w-full">
                                         <label class="label pl-1 py-1">
                                             <span
@@ -60,8 +58,6 @@
                                         <Usernameinput v-model="username" />
                                     </div>
 
-                                    <!-- 昵称输入 (新增) -->
-                                    <!-- 昵称输入 (新增) -->
                                     <div class="w-full">
                                         <label class="label pl-1 py-1">
                                             <span
@@ -70,7 +66,6 @@
                                         <Usernameinput v-model="nickname" placeholder="昵称" />
                                     </div>
 
-                                    <!-- 密码输入 -->
                                     <div class="w-full">
                                         <label class="label pl-1 py-1">
                                             <span
@@ -79,7 +74,6 @@
                                         <Passwordinput v-model="password" />
                                     </div>
 
-                                    <!-- 确认密码输入（建议新增） -->
                                     <div class="w-full">
                                         <label class="label pl-1 py-1">
                                             <span
@@ -89,9 +83,7 @@
                                         <Passwordinput v-model="confirmPassword" />
                                     </div>
 
-                                    <!-- 按钮组 -->
                                     <div class="space-y-3 pt-4">
-                                        <!-- 注册按钮 -->
                                         <button @click="handleRegister" :disabled="isLoading"
                                             class="btn w-full h-12 border-0 bg-gradient-to-r from-[#3b5bdb] to-[#228be6] hover:from-[#364fc7] hover:to-[#1c7ed6] text-white font-bold tracking-wide shadow-[0_0_20px_rgba(34,139,230,0.3)] hover:shadow-[0_0_30px_rgba(34,139,230,0.5)] transition-all duration-300 rounded-lg relative overflow-hidden group/btn">
                                             <span class="relative z-10">{{ isLoading ? '注册中...' : '注 册' }}</span>
@@ -100,7 +92,6 @@
                                             </div>
                                         </button>
 
-                                        <!-- 返回登录按钮 -->
                                         <button @click="goToLogin"
                                             class="btn w-full h-12 bg-transparent hover:bg-white/5 text-blue-100/80 border border-white/10 hover:border-white/30 font-medium transition-all duration-300 rounded-lg">
                                             已有账号？去登录
@@ -120,21 +111,19 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-// 禁用默认布局（隐藏 Navbar 和 PlayerBar）
 definePageMeta({
     layout: false
 })
 
 const router = useRouter()
 const username = ref('')
-const nickname = ref('')  // 新增
+const nickname = ref('')
 const password = ref('')
-const confirmPassword = ref('')  // 新增：确认密码
+const confirmPassword = ref('')
 const isLoading = ref(false)
 
 // 注册处理
 const handleRegister = async () => {
-    // 1. 前端校验
     if (!username.value || !password.value) {
         alert('请输入用户名和密码')
         return
@@ -150,7 +139,6 @@ const handleRegister = async () => {
         return
     }
 
-    // 2. 密码长度校验（建议至少 6 位）
     if (password.value.length < 6) {
         alert('密码长度至少为 6 位')
         return
@@ -159,7 +147,6 @@ const handleRegister = async () => {
     isLoading.value = true
 
     try {
-        // 3. 调用后端注册接口
         const response = await $fetch<{ code: number; message: string; data: string }>('/api/auth/register', {
             method: 'POST',
             body: {
@@ -171,7 +158,6 @@ const handleRegister = async () => {
 
         if (response.code === 200) {
             alert('注册成功！即将跳转到登录页...')
-            // 跳转到登录页
             await router.push('/login')
         } else {
             alert(response.message || '注册失败')
@@ -184,7 +170,6 @@ const handleRegister = async () => {
     }
 }
 
-// 返回登录页
 const goToLogin = () => {
     router.push('/login')
 }
@@ -198,7 +183,6 @@ const goToLogin = () => {
 </style>
 
 <style>
-/* 全局页面过渡动画 */
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 1s ease;

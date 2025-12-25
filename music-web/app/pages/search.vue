@@ -7,7 +7,6 @@
                 <div class="text-gray-400 animate-pulse text-lg">正在搜索...</div>
             </div>
 
-            <!-- 搜索结果为空 -->
             <div v-else-if="!result || result.totalSongs === 0"
                 class="flex flex-col items-center justify-center py-20 text-gray-500">
                 <Icon icon="solar:music-note-2-linear" class="text-6xl mb-4 opacity-30" />
@@ -15,9 +14,7 @@
                 <p class="text-sm">试试其他关键词吧</p>
             </div>
 
-            <!-- 搜索结果 -->
             <template v-else>
-                <!-- 搜索结果标题 -->
                 <div class="mb-8 border-b border-white/10 pb-6">
                     <h1 class="text-3xl font-bold text-white mb-2">
                         搜索"<span class="text-blue-400">{{ keyword }}</span>"
@@ -27,7 +24,6 @@
                     </p>
                 </div>
 
-                <!-- Tab 切换 -->
                 <div class="flex gap-2 mb-8 border-b border-white/10">
                     <button @click="activeTab = 'songs'" :class="[
                         'px-6 py-3 font-medium transition-all relative',
@@ -63,19 +59,15 @@
                     </button>
                 </div>
 
-                <!-- 内容区域 -->
                 <div class="min-h-[400px]">
-                    <!-- 单曲列表 -->
                     <div v-if="activeTab === 'songs'">
                         <IndexMusicList :songs="result.songs" />
                     </div>
 
-                    <!-- 歌手列表 -->
                     <div v-if="activeTab === 'artists'" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         <div v-for="artist in result.artists" :key="artist.name"
                             class="group p-4 rounded-xl bg-[#151925]/50 hover:bg-[#1a2035] border border-white/5 hover:border-white/10 transition-all cursor-pointer">
                             <div class="text-center">
-                                <!-- 歌手头像 -->
                                 <div
                                     class="w-20 h-20 rounded-full mx-auto mb-3 overflow-hidden bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
                                     <img v-if="artist.avatar" :src="artist.avatar" :alt="artist.name"
@@ -91,11 +83,9 @@
                         </div>
                     </div>
 
-                    <!-- 专辑列表 -->
                     <div v-if="activeTab === 'albums'" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         <div v-for="album in result.albums" :key="album.name"
                             class="group p-3 rounded-xl bg-[#151925]/50 hover:bg-[#1a2035] border border-white/5 hover:border-white/10 transition-all cursor-pointer">
-                            <!-- 专辑封面 -->
                             <div class="w-full aspect-square rounded-lg mb-3 overflow-hidden bg-[#0a0f1a]">
                                 <img :src="album.coverUrl || defaultCover" :alt="album.name"
                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -156,7 +146,6 @@ interface Result<T> {
     data: T
 }
 
-// 执行搜索
 const performSearch = async () => {
     if (!keyword.value) {
         isLoading.value = false
@@ -182,7 +171,6 @@ const performSearch = async () => {
     }
 }
 
-// 监听关键词变化
 watch(keyword, () => {
     performSearch()
 })

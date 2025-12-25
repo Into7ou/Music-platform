@@ -45,14 +45,12 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore - useFetch is auto-imported by Nuxt
 import { useFetch } from '#app';
 import type { Song, PageResult, Result } from '../types/music';
 import { usePlayerStore } from '../stores/usePlayer';
 
 const playerStore = usePlayerStore();
 
-// 使用 useFetch 获取歌曲列表
 const { data, pending, error } = await useFetch<Result<PageResult<Song>>>('/api/music/list', {
   query: {
     page: 1,
