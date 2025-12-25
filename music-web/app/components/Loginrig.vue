@@ -154,27 +154,29 @@ const handleLogin = async () => {
         })
 
         if (response.code === 200) {
-            // 登录成功，保存 token
-            // ⭐ response.data 是 UserLoginVO 对象，需要取其中的 token 字段
-            const token = response.data.token
+            const { token, username, nickname, avatar } = response.data
+            console.log('登录返回的数据:', response.data)
 
-            console.log('登录返回的 token:', token)  // 调试日志
+            // 统一存储用户信息
+            const userInfo = {
+                username: username,
+                nickname: nickname || username,
+                avatar: avatar || '/defaultAvatar.png'
+            }
 
             if (rememberMe.value) {
                 localStorage.setItem('token', token)
-                localStorage.setItem('username', response.data.username)
-                if (response.data.nickname) {
-                    localStorage.setItem('nickname', response.data.nickname)
-                }
+                localStorage.setItem('userInfo', JSON.stringify(userInfo))
             } else {
                 sessionStorage.setItem('token', token)
-                sessionStorage.setItem('username', response.data.username)
-                if (response.data.nickname) {
-                    sessionStorage.setItem('nickname', response.data.nickname)
-                }
+                sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
             }
 
             alert('登录成功！')
+
+            // 触发 storage 事件，通知 Navbar 更新
+            window.dispatchEvent(new Event('storage'))
+
             await router.push('/')
         } else {
             alert(response.msg || '登录失败')
@@ -185,9 +187,6 @@ const handleLogin = async () => {
     } finally {
         isLoading.value = false
     }
-
-    // 登录成功后，触发 storage 事件，通知其他标签页
-    window.dispatchEvent(new Event('storage'))
 }
 
 const handleRegister = () => {
