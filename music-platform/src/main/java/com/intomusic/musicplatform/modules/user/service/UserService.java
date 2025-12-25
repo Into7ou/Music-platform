@@ -11,6 +11,7 @@ import com.intomusic.musicplatform.modules.user.model.vo.UserLoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.UUID;
 
@@ -42,7 +43,8 @@ public class UserService {
 
         // --- 密码处理逻辑 (当前：明文) ---
         // TODO: 后期只需在这里改为: String encoded = BCrypt.hashpw(req.getPassword(), ...);
-        user.setPassword(req.getPassword());
+        String hashedPassword = BCrypt.hashpw(req.getPassword(), BCrypt.gensalt());
+        user.setPassword(hashedPassword);
         // -----------------------------
 
         // 3. 写入数据库
@@ -84,7 +86,7 @@ public class UserService {
         // 2. 比对密码
         // --- 密码比对逻辑 (当前：明文比对) ---
         // TODO: 后期只需在这里改为: if (!BCrypt.checkpw(req.getPassword(), user.getPassword())) ...
-        if (!user.getPassword().equals(req.getPassword())) {
+        if (!BCrypt.checkpw(req.getPassword(), user.getPassword())) {
             return Result.error("密码错误");
         }
         // ---------------------------------
