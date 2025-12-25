@@ -1,0 +1,58 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: music-platform
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 250MB      # 单个文件最大大小 (建议 50MB 或更大)
+      max-request-size: 300MB  # 单次请求总大小 (包含所有文件和表单数据)
+
+  # --- 1. ??????? (??) ---
+  datasource:
+    dynamic:
+      primary: user # ??????
+      strict: true  # ????
+      datasource:
+        # User ??? (Docker?? 3307)
+        user_db:
+          url: jdbc:mysql://localhost:3307/user_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          driver-class-name: com.mysql.cj.jdbc.Driver
+        # Music ??? (Docker?? 3307)
+        music_db:
+          url: jdbc:mysql://localhost:3307/music_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+          driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # --- 2. Redis ?? ---
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: root
+      database: 0
+
+# --- 3. ?? MyBatis ?? ---
+mybatis:
+  # XML ????? (???? resources ??? mapper ???)
+  mapper-locations: classpath:mapper/**/*.xml
+  # ?????? (??? XML resultType ?????? "User" ???????)
+  # ????groupId??????User??? com.intomusic.musicplatform.modules.user.model.entity
+  type-aliases-package: com.intomusic.musicplatform.modules.*.model.entity
+  configuration:
+    # ?????? (user_id -> userId)
+    map-underscore-to-camel-case: true
+    # ?? SQL ?? (????)
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# --- MinIO 配置 (自定义) ---
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: music-platform

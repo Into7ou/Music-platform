@@ -1,0 +1,33 @@
+### 测试上传音乐接口
+POST http://localhost:8080/music/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="title"
+
+Endfield Theme Song
+--WebAppBoundary
+Content-Disposition: form-data; name="artist"
+
+Hypergryph
+--WebAppBoundary
+Content-Disposition: form-data; name="album"
+
+Endfield OST
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="cycle_of_sorrow.flac"
+Content-Type: audio/flac
+
+# Windows用户示例: < C:/Users/YourName/Music/song.mp3
+# Mac/Linux用户示例: < /Users/YourName/Music/song.mp3
+< D:\Musicsources\cycle_of_sorrow.flac
+--WebAppBoundary--
+
+### 1. 测试分页查询 (无关键词)
+GET http://localhost:8080/music/list?page=1&size=5
+
+### 2. 测试带关键词搜索 (假设你之前传了 title="Endfield")
+GET http://localhost:8080/music/list?page=1&size=5&keyword=Endfield
+
+### 3. 测试搜索不存在的歌 (验证 count=0 的逻辑)
+GET http://localhost:8080/music/list?page=1&size=5&keyword=NotExistsz

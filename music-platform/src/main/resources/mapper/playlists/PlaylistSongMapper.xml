@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intomusic.musicplatform.modules.playlists.mapper.PlaylistSongMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intomusic.musicplatform.modules.playlists.model.entity.PlaylistSong">
+        <id column="id" property="id" />
+        <result column="playlist_id" property="playlistId" />
+        <result column="song_id" property="songId" />
+        <result column="add_time" property="addTime" />
+        <result column="sort_order" property="sortOrder" />
+    </resultMap>
+
+    <!-- 添加歌曲到歌单 -->
+    <insert id="insert" parameterType="com.intomusic.musicplatform.modules.playlists.model.entity.PlaylistSong"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_playlist_song (playlist_id, song_id, add_time, sort_order)
+        VALUES (#{playlistId}, #{songId}, NOW(), #{sortOrder})
+    </insert>
+
+    <!-- 从歌单移除歌曲 -->
+    <delete id="delete">
+        DELETE FROM sys_playlist_song
+        WHERE playlist_id = #{playlistId} AND song_id = #{songId}
+    </delete>
+
+    <!-- 查询歌单的所有歌曲ID -->
+    <select id="selectSongIdsByPlaylistId" resultType="Long">
+        SELECT song_id
+        FROM sys_playlist_song
+        WHERE playlist_id = #{playlistId}
+        ORDER BY sort_order ASC, add_time DESC
+    </select>
+
+    <!-- 检查歌曲是否在歌单中 -->
+    <select id="existsBySongId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM sys_playlist_song
+        WHERE playlist_id = #{playlistId} AND song_id = #{songId}
+    </select>
+
+    <!-- 统计歌单歌曲数量 -->
+    <select id="countByPlaylistId" resultType="int">
+        SELECT COUNT(*)
+        FROM sys_playlist_song
+        WHERE playlist_id = #{playlistId}
+    </select>
+
+    <!-- 删除歌单的所有歌曲关联 -->
+    <delete id="deleteByPlaylistId">
+        DELETE FROM sys_playlist_song
+        WHERE playlist_id = #{playlistId}
+    </delete>
+
+</mapper>

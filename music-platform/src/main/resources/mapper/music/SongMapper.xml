@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intomusic.musicplatform.modules.music.mapper.SongMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intomusic.musicplatform.modules.music.model.entity.Song">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="artist" property="artist" />
+        <result column="album" property="album" />
+        <result column="genre" property="genre"/>
+        <result column="file_url" property="fileUrl" />
+        <result column="file_size" property="fileSize" />
+        <result column="duration" property="duration" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="cover_url" property="coverUrl" />
+    </resultMap>
+
+    <!-- 通用查询条件 SQL 片段 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="req.keyword != null and req.keyword != ''">
+                (title LIKE CONCAT('%', #{req.keyword}, '%')
+                OR artist LIKE CONCAT('%', #{req.keyword}, '%')
+                OR album LIKE CONCAT('%', #{req.keyword}, '%'))
+            </if>
+        </where>
+    </sql>
+
+    <!-- 插入歌曲 -->
+    <insert id="insert" parameterType="com.intomusic.musicplatform.modules.music.model.entity.Song" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_song (title, artist, album,genre, file_url, file_size, duration, cover_url, create_time, update_time)
+        VALUES (#{title}, #{artist}, #{album},#{genre}, #{fileUrl}, #{fileSize}, #{duration}, #{coverUrl}, NOW(), NOW())
+    </insert>
+
+    <!-- 根据 ID 查询歌曲详情 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT
+            id,
+            title,
+            artist,
+            album,
+            genre,
+            file_url,
+            file_size,
+            duration,
+            cover_url,
+            create_time,
+            update_time
+        FROM sys_song
+        WHERE id = #{id}
+    </select>
+
+    <!-- 分页查询歌曲列表 -->
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT
+            id,
+            title,
+            artist,
+            album,
+            genre,
+            file_url,
+            file_size,
+            duration,
+            cover_url,
+            create_time,
+            update_time
+        FROM sys_song
+        <include refid="whereCondition" />
+        ORDER BY create_time DESC
+        LIMIT #{req.offset}, #{req.size}
+    </select>
+
+    <!-- 统计歌曲总数 -->
+    <select id="countList" resultType="long">
+        SELECT COUNT(*)
+        FROM sys_song
+        <include refid="whereCondition" />
+    </select>
+
+
+    <!-- 随机获取歌曲 -->
+    <select id="selectRandomSongs" resultType="com.intomusic.musicplatform.modules.music.model.entity.Song">
+        SELECT
+            id,
+            title,
+            artist,
+            album,
+            genre,
+            duration,
+            file_url AS fileUrl,
+            file_size AS fileSize,
+            cover_url AS coverUrl,
+            create_time AS createTime,
+            update_time AS updateTime
+        FROM sys_song
+        ORDER BY RAND()
+            LIMIT #{count}
+    </select>
+</mapper>

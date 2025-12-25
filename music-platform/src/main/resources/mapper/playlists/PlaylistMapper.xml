@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intomusic.musicplatform.modules.playlists.mapper.PlaylistMapper">
+
+    <!-- 基础结果映射 -->
+    <resultMap id="BaseResultMap" type="com.intomusic.musicplatform.modules.playlists.model.entity.Playlist">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="description" property="description" />
+        <result column="cover_url" property="coverUrl" />
+        <result column="is_public" property="isPublic" />
+        <result column="is_default" property="isDefault" />
+        <result column="playlist_type" property="playlistType" />
+        <result column="song_count" property="songCount" />
+        <result column="play_count" property="playCount" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 插入歌单 -->
+    <insert id="insert" parameterType="com.intomusic.musicplatform.modules.playlists.model.entity.Playlist"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_playlist (
+            user_id, name, description, cover_url,
+            is_public, is_default, playlist_type,
+            song_count, play_count, create_time, update_time
+        )
+        VALUES (
+                   #{userId}, #{name}, #{description}, #{coverUrl},
+                   #{isPublic}, #{isDefault}, #{playlistType},
+                   0, 0, NOW(), NOW()
+               )
+    </insert>
+
+    <!-- 根据 ID 查询歌单 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM sys_playlist
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询用户的所有歌单 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT * FROM sys_playlist
+        WHERE user_id = #{userId}
+        ORDER BY is_default DESC, create_time DESC
+    </select>
+
+    <!-- 查询用户的默认歌单 (i_like) -->
+    <select id="selectDefaultByUserId" resultMap="BaseResultMap">
+        SELECT * FROM sys_playlist
+        WHERE user_id = #{userId} AND is_default = 1
+            LIMIT 1
+    </select>
+
+    <!-- 查询公开歌单列表 (分页) -->
+    <select id="selectPublicList" resultMap="BaseResultMap">
+        SELECT * FROM sys_playlist
+        WHERE is_public = 1
+        ORDER BY play_count DESC, create_time DESC
+            LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 统计公开歌单总数 -->
+    <select id="countPublicList" resultType="long">
+        SELECT COUNT(*) FROM sys_playlist
+        WHERE is_public = 1
+    </select>
+
+    <!-- 更新歌单信息 -->
+    <update id="update">
+        UPDATE sys_playlist
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="coverUrl != null">
+                cover_url = #{coverUrl},
+            </if>
+            <if test="isPublic != null">
+                is_public = #{isPublic},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <!-- 删除歌单 -->
+    <delete id="deleteById">
+        DELETE FROM sys_playlist
+        WHERE id = #{id} AND user_id = #{userId} AND is_default = 0
+    </delete>
+
+    <!-- 增加播放次数 -->
+    <update id="incrementPlayCount">
+        UPDATE sys_playlist
+        SET play_count = play_count + 1
+        WHERE id = #{id}
+    </update>
+
+</mapper>
