@@ -1,0 +1,2 @@
+GET http://localhost:8080/music/search?keyword=the weeknd
+Accept: application/json
