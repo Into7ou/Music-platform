@@ -98,4 +98,45 @@
         ORDER BY RAND()
             LIMIT #{count}
     </select>
+
+    <!-- ========== 管理员功能：更新、删除 ========== -->
+
+    <!-- 更新歌曲信息 -->
+    <update id="update">
+        UPDATE sys_song
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="artist != null and artist != ''">
+                artist = #{artist},
+            </if>
+            <if test="album != null and album != ''">
+                album = #{album},
+            </if>
+            <if test="genre != null and genre != ''">
+                genre = #{genre},
+            </if>
+            <if test="coverUrl != null">
+                cover_url = #{coverUrl},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID删除歌曲 -->
+    <delete id="deleteById">
+        DELETE FROM sys_song
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 批量删除歌曲 -->
+    <delete id="batchDelete">
+        DELETE FROM sys_song
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>

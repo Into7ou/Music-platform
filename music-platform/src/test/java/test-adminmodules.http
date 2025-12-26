@@ -1,0 +1,297 @@
+### ========================================
+### Admin Module API 测试
+### 管理员用户管理 + 音乐管理
+### ========================================
+
+### 环境变量
+@baseUrl = http://localhost:8080
+
+### ========================================
+### 第一部分：用户管理 API 测试
+### ========================================
+
+### ----------------------------------------
+### 1. 获取所有角色列表 (GET /admin/user/roles)
+### ----------------------------------------
+GET {{baseUrl}}/admin/user/roles
+
+### ----------------------------------------
+### 2. 获取用户列表 (GET /admin/user/list)
+### ----------------------------------------
+
+### 2.1 默认查询（第1页，10条）
+GET {{baseUrl}}/admin/user/list
+
+### 2.2 带分页参数
+GET {{baseUrl}}/admin/user/list?page=1&size=5
+
+### 2.3 按用户名模糊查询
+GET {{baseUrl}}/admin/user/list?username=test
+
+### 2.4 按角色筛选（roleId=2 为普通用户）
+GET {{baseUrl}}/admin/user/list?roleId=2
+
+### 2.5 按状态筛选（status=0 为正常）
+GET {{baseUrl}}/admin/user/list?status=0
+
+### 2.6 组合查询（用户名 + 角色 + 状态）
+GET {{baseUrl}}/admin/user/list?username=admin&roleId=1&status=0
+
+### ----------------------------------------
+### 3. 获取用户详情 (GET /admin/user/detail/{userId})
+### ----------------------------------------
+
+### 3.1 获取存在的用户（假设用户ID为2）
+GET {{baseUrl}}/admin/user/detail/2
+
+### 3.2 获取不存在的用户（预期返回错误）
+GET {{baseUrl}}/admin/user/detail/99999
+
+### ----------------------------------------
+### 4. 禁用用户 (PUT /admin/user/disable/{userId})
+### ----------------------------------------
+
+### 4.1 禁用用户ID为3的用户
+PUT {{baseUrl}}/admin/user/disable/3
+
+### 4.2 验证禁用结果（查看用户详情，status应为1）
+GET {{baseUrl}}/admin/user/detail/3
+
+### ----------------------------------------
+### 5. 启用用户 (PUT /admin/user/enable/{userId})
+### ----------------------------------------
+
+### 5.1 启用用户ID为3的用户（还原测试数据）
+PUT {{baseUrl}}/admin/user/enable/3
+
+### 5.2 验证启用结果（查看用户详情，status应为0）
+GET {{baseUrl}}/admin/user/detail/3
+
+### ----------------------------------------
+### 6. 修改用户角色 (PUT /admin/user/role/{userId}?roleId={roleId})
+### ----------------------------------------
+
+### 6.1 先查看用户3的当前角色
+GET {{baseUrl}}/admin/user/detail/3
+
+### 6.2 将用户3的角色修改为管理员（roleId=1）
+PUT {{baseUrl}}/admin/user/role/3?roleId=1
+
+### 6.3 验证角色修改结果
+GET {{baseUrl}}/admin/user/detail/3
+
+### 6.4 【数据还原】将用户3的角色改回普通用户（roleId=2）
+PUT {{baseUrl}}/admin/user/role/3?roleId=2
+
+### 6.5 【验证还原】确认角色已还原
+GET {{baseUrl}}/admin/user/detail/3
+
+### ========================================
+### 第二部分：音乐管理 API 测试
+### ========================================
+
+### ----------------------------------------
+### 7. 编辑歌曲信息 (PUT /admin/music/update)
+### ----------------------------------------
+
+### 7.1 先查看歌曲ID为1的原始信息
+GET {{baseUrl}}/music/1
+
+### 7.2 编辑歌曲信息（修改标题、歌手、专辑）
+PUT {{baseUrl}}/admin/music/update
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "[测试修改]新标题",
+  "artist": "[测试修改]新歌手",
+  "album": "[测试修改]新专辑",
+  "genre": "流行",
+  "coverUrl": "http://test.com/cover.jpg"
+}
+
+### 7.3 验证修改结果
+GET {{baseUrl}}/music/1
+
+### 7.4 【数据还原】将歌曲信息改回原始值（请根据实际原始值修改）
+PUT {{baseUrl}}/admin/music/update
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "原始标题",
+  "artist": "原始歌手",
+  "album": "原始专辑",
+  "genre": "原始流派",
+  "coverUrl": "原始封面URL"
+}
+
+### 7.5 【验证还原】确认已还原
+GET {{baseUrl}}/music/1
+
+### ----------------------------------------
+### 8. 删除歌曲 (DELETE /admin/music/{songId})
+### ----------------------------------------
+
+### 8.1 先创建一个测试歌曲用于删除
+POST {{baseUrl}}/music/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="test.mp3"
+Content-Type: audio/mpeg
+
+<@test_music_file
+--boundary
+Content-Disposition: form-data; name="title"
+
+测试删除歌曲
+--boundary
+Content-Disposition: form-data; name="artist"
+
+测试歌手
+--boundary
+Content-Disposition: form-data; name="album"
+
+测试专辑
+--boundary--
+
+### 8.2 查询刚创建的歌曲（假设返回的ID为100）
+GET {{baseUrl}}/music/list?keyword=测试删除歌曲
+
+### 8.3 删除该歌曲（请将100替换为实际返回的ID）
+DELETE {{baseUrl}}/admin/music/100
+
+### 8.4 验证删除结果（应返回"歌曲不存在"）
+GET {{baseUrl}}/music/100
+
+### ----------------------------------------
+### 9. 批量删除歌曲 (DELETE /admin/music/batch)
+### ----------------------------------------
+
+### 9.1 先创建多个测试歌曲
+POST {{baseUrl}}/music/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="test1.mp3"
+Content-Type: audio/mpeg
+
+<@test_music_file
+--boundary
+Content-Disposition: form-data; name="title"
+
+批量测试歌曲1
+--boundary--
+
+###
+POST {{baseUrl}}/music/upload
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="test2.mp3"
+Content-Type: audio/mpeg
+
+<@test_music_file
+--boundary
+Content-Disposition: form-data; name="title"
+
+批量测试歌曲2
+--boundary--
+
+### 9.2 批量删除歌曲（假设ID为101、102，请替换为实际ID）
+DELETE {{baseUrl}}/admin/music/batch
+Content-Type: application/json
+
+[101, 102]
+
+### 9.3 验证批量删除结果
+GET {{baseUrl}}/music/101
+
+###
+GET {{baseUrl}}/music/102
+
+### ========================================
+### 第三部分：边界测试与异常情况
+### ========================================
+
+### ----------------------------------------
+### 10. 异常参数测试
+### ----------------------------------------
+
+### 10.1 禁用不存在的用户
+PUT {{baseUrl}}/admin/user/disable/99999
+
+### 10.2 修改用户为不存在的角色
+PUT {{baseUrl}}/admin/user/role/2?roleId=999
+
+### 10.3 编辑不存在的歌曲
+PUT {{baseUrl}}/admin/music/update
+Content-Type: application/json
+
+{
+  "id": 99999,
+  "title": "不存在的歌曲"
+}
+
+### 10.4 删除不存在的歌曲
+DELETE {{baseUrl}}/admin/music/99999
+
+### 10.5 批量删除空列表
+DELETE {{baseUrl}}/admin/music/batch
+Content-Type: application/json
+
+[]
+
+### 10.6 批量删除不存在的歌曲ID
+DELETE {{baseUrl}}/admin/music/batch
+Content-Type: application/json
+
+[88888, 99999]
+
+### ========================================
+### 第四部分：【数据完整性测试】
+### 完整的测试流程（创建→修改→查询→还原）
+### ========================================
+
+### ----------------------------------------
+### 11. 完整流程测试：用户状态管理
+### ----------------------------------------
+
+### 步骤1：获取测试用户（ID=4）的初始状态
+GET {{baseUrl}}/admin/user/detail/2
+
+### 步骤2：禁用该用户
+PUT {{baseUrl}}/admin/user/disable/2
+
+### 步骤3：验证禁用成功（status=1）
+GET {{baseUrl}}/admin/user/detail/2
+
+### 步骤4：【数据还原】重新启用用户
+PUT {{baseUrl}}/admin/user/enable/2
+
+### 步骤5：【验证还原】确认状态已恢复（status=0）
+GET {{baseUrl}}/admin/user/detail/2
+
+### ----------------------------------------
+### 12. 完整流程测试：用户角色管理
+### ----------------------------------------
+
+### 步骤1：查询用户（ID=5）的原始角色
+GET {{baseUrl}}/admin/user/detail/5
+
+### 步骤2：修改角色为管理员（roleId=1）
+PUT {{baseUrl}}/admin/user/role/5?roleId=1
+
+### 步骤3：验证角色修改成功
+GET {{baseUrl}}/admin/user/detail/5
+
+### 步骤4：【数据还原】改回普通用户（roleId=2）
+PUT {{baseUrl}}/admin/user/role/5?roleId=2
+
+### 步骤5：【验证还原】确认角色已恢复
+GET {{baseUrl}}/admin/user/detail/5
+
+### ========================================
+### 测试完成
+### ========================================

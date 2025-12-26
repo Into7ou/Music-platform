@@ -42,4 +42,28 @@ public interface SongMapper {
      * @return 随机歌曲列表
      */
     List<Song> selectRandomSongs(@Param("count") Integer count);
+
+    /**
+     * 更新歌曲信息
+     *
+     * @param song 歌曲实体
+     * @return 影响行数
+     */
+    int update(Song song);
+
+    /**
+     * 根据ID删除歌曲
+     *
+     * @param id 歌曲ID
+     * @return 影响行数
+     */
+    int deleteById(@Param("id") Long id);
+
+    /**
+     * 批量删除歌曲
+     *
+     * @param ids 歌曲ID列表
+     * @return 影响行数
+     */
+    int batchDelete(@Param("ids") List<Long> ids);
 }

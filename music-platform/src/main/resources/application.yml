@@ -18,13 +18,13 @@ spring:
       datasource:
         # User ??? (Docker?? 3307)
         user_db:
-          url: jdbc:mysql://localhost:3307/user_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://localhost:3311/user_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
         # Music ??? (Docker?? 3307)
         music_db:
-          url: jdbc:mysql://localhost:3307/music_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://localhost:3311/music_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver

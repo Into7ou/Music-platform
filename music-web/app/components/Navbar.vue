@@ -10,7 +10,6 @@
                             d="M4 6h16M4 12h8m-8 6h16" />
                     </svg>
                 </div>
-                <!-- 移动端菜单：也改为深色背景 -->
                 <ul tabindex="-1"
                     class="menu menu-sm dropdown-content bg-[#151925] text-gray-200 rounded-box z-10 mt-3 w-52 p-2 shadow-2xl border border-white/10">
                     <li>
@@ -42,7 +41,19 @@
             </NuxtLink>
         </div>
 
-        <!-- 桌面端菜单 -->
+        <NuxtLink v-if="isLoggedIn && userInfo?.roleId === 1" to="/admin"
+            class="ml-4 btn btn-sm h-9 border border-amber-400/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 text-amber-200 font-semibold tracking-wide shadow-[0_0_10px_rgba(251,191,36,0.2)] hover:shadow-[0_0_20px_rgba(251,191,36,0.4)] transition-all duration-300 rounded-lg group"
+            title="进入管理后台">
+            <svg class="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="hidden sm:inline">管理后台</span>
+        </NuxtLink>
+
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1 gap-1">
                 <li v-for="(item, index) in navItems" :key="index">
@@ -64,7 +75,6 @@
             </NuxtLink>
 
             <div v-else class="dropdown dropdown-end">
-                <!-- 触发按钮 -->
                 <div tabindex="0" role="button"
                     class="flex items-center gap-2 btn btn-ghost hover:bg-white/10 text-white group">
                     <div class="avatar">
@@ -77,23 +87,19 @@
                     <span class="font-normal group-hover:text-blue-200 transition-colors">
                         {{ userInfo?.nickname || '个人中心' }}
                     </span>
-                    <!-- 下拉箭头图标 -->
                     <svg class="w-4 h-4 transition-transform group-hover:translate-y-0.5" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>
 
-                <!-- 下拉菜单内容 -->
                 <ul tabindex="0"
                     class="dropdown-content menu bg-[#151925]/95 backdrop-blur-xl rounded-box z-50 w-52 p-2 shadow-2xl border border-white/10 mt-3">
-                    <!-- 用户信息头部 -->
                     <li class="menu-title px-4 py-2">
                         <span class="text-blue-200/80 text-xs">{{ userInfo?.username }}</span>
                     </li>
                     <div class="divider my-0"></div>
 
-                    <!-- 资料选项 -->
                     <li>
                         <NuxtLink to="/user-detail"
                             class="text-gray-300 hover:text-white hover:bg-blue-500/20 transition-all duration-200">
@@ -105,7 +111,6 @@
                         </NuxtLink>
                     </li>
 
-                    <!-- 登出选项 -->
                     <li>
                         <a @click="handleLogout"
                             class="text-gray-300 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200">
@@ -129,10 +134,13 @@ import SearchInput from './SearchInput.vue'
 const router = useRouter()
 const isLoggedIn = ref(false)
 const searchKeyword = ref('')
+
 const userInfo = ref<{
     username: string
     nickname: string
     avatar: string
+    roleId?: number
+    roleName?: string
 } | null>(null)
 
 const navItems = [
@@ -149,7 +157,6 @@ const checkLoginStatus = async () => {
     const token = localStorage.getItem('token') || sessionStorage.getItem('token')
     isLoggedIn.value = !!token
 
-    // ⭐ 如果已登录，从后端获取最新用户信息
     if (token) {
         try {
             const response = await $fetch<{
@@ -158,6 +165,8 @@ const checkLoginStatus = async () => {
                     username: string
                     nickname: string
                     avatar: string
+                    roleId?: number
+                    roleName?: string
                 }
             }>('/api/user/me', {
                 headers: { 'Authorization': token }
@@ -167,16 +176,16 @@ const checkLoginStatus = async () => {
                 userInfo.value = {
                     username: response.data.username,
                     nickname: response.data.nickname,
-                    avatar: response.data.avatar || '/defaultAvatar.png'
+                    avatar: response.data.avatar || '/defaultAvatar.png',
+                    roleId: response.data.roleId,
+                    roleName: response.data.roleName
                 }
 
-                // 可选：更新本地存储
                 const storage = localStorage.getItem('token') ? localStorage : sessionStorage
                 storage.setItem('userInfo', JSON.stringify(userInfo.value))
             }
         } catch (error) {
             console.error('获取用户信息失败:', error)
-            // 降级：尝试从本地存储读取
             const storedUserInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo')
             if (storedUserInfo) {
                 try {
@@ -193,7 +202,7 @@ const checkLoginStatus = async () => {
 
 const handleImageError = (e: Event) => {
     const target = e.target as HTMLImageElement
-    target.src = '/defaultAvatar.png'  // 加载失败时使用默认头像
+    target.src = '/defaultAvatar.png'
 }
 
 const handleLogout = () => {

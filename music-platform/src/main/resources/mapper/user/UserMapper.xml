@@ -47,4 +47,56 @@
         WHERE id = #{id}
     </update>
 
+    <!-- ========== 管理员功能相关 ========== -->
+
+    <!-- 查询所有用户（分页，支持条件筛选） -->
+    <select id="selectAllUsers" resultType="User">
+        SELECT id, username, nickname, avatar, bio, role_id, status, create_time, update_time
+        FROM sys_user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="roleId != null">
+                AND role_id = #{roleId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 查询用户总数（支持条件筛选） -->
+    <select id="countAllUsers" resultType="Long">
+        SELECT COUNT(*)
+        FROM sys_user
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="roleId != null">
+                AND role_id = #{roleId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 更新用户状态 -->
+    <update id="updateUserStatus">
+        UPDATE sys_user
+        SET status = #{status}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 更新用户角色 -->
+    <update id="updateUserRole">
+        UPDATE sys_user
+        SET role_id = #{roleId}
+        WHERE id = #{id}
+    </update>
+
 </mapper>

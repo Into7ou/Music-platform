@@ -37,4 +37,6 @@ public class UserDetailVO {
      * 注册时间
      */
     private LocalDateTime createTime;
+    private Long roleId;
+    private String roleName;
 }

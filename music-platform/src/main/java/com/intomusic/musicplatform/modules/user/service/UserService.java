@@ -46,6 +46,9 @@ public class UserService {
     @Resource
     private MinioUtil minioUtil;
 
+    @Autowired
+    private com.intomusic.musicplatform.modules.admin.mapper.RoleMapper roleMapper;
+
     /**
      * 用户注册
      */
@@ -197,6 +200,21 @@ public class UserService {
 
         UserDetailVO vo = new UserDetailVO();
         BeanUtils.copyProperties(user, vo);
+
+        // 🆕 新增：填充角色信息
+        if (user.getRoleId() != null) {
+            try {
+                com.intomusic.musicplatform.modules.admin.model.entity.Role role =
+                        roleMapper.selectById(user.getRoleId());
+                if (role != null) {
+                    vo.setRoleId(role.getId());
+                    vo.setRoleName(role.getRoleName());
+                }
+            } catch (Exception e) {
+                // 如果查询角色失败，不影响用户信息返回，只记录日志
+                System.err.println("查询角色信息失败: " + e.getMessage());
+            }
+        }
 
         return Result.success(vo);
     }
