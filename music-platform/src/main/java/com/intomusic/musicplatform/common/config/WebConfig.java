@@ -31,12 +31,16 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     /**
-     * 配置 CORS 跨域（可选）
+     * 配置 CORS 跨域
      */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "http://127.0.0.1:3000") // 允许的前端地址
+                // 🔧 修复：使用 allowedOriginPatterns 代替 allowedOrigins
+                .allowedOriginPatterns(
+                        "http://localhost:*",      // 允许 localhost 的任意端口
+                        "http://127.0.0.1:*"        // 允许 127.0.0.1 的任意端口
+                )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

@@ -23,7 +23,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/playlist")
-@CrossOrigin(origins = "*") // 允许前端跨域调用
 public class PlaylistController {
 
     @Resource

@@ -17,7 +17,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/admin/user")
-@CrossOrigin(origins = "*") // 允许前端跨域调用
 public class AdminUserController {
 
     @Resource

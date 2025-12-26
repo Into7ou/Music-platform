@@ -13,7 +13,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/admin/music")
-@CrossOrigin(origins = "*") // 允许前端跨域调用
 public class AdminMusicController {
 
     @Resource
