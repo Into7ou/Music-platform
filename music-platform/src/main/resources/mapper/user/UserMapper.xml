@@ -3,13 +3,13 @@
 <mapper namespace="com.intomusic.musicplatform.modules.user.mapper.UserMapper">
 
     <select id="selectByUsername" resultType="User">
-        SELECT id, username, password, nickname, avatar, bio, create_time
+        SELECT id, username, password, nickname, avatar, bio, role_id, status, create_time, update_time
         FROM sys_user
         WHERE username = #{username}
     </select>
 
     <select id="selectById" resultType="User">
-        SELECT id, username, password, nickname, avatar, bio, create_time
+        SELECT id, username, password, nickname, avatar, bio, role_id, status, create_time, update_time
         FROM sys_user
         WHERE id = #{id}
     </select>

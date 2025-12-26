@@ -39,20 +39,12 @@
                 class="btn btn-ghost text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-cyan-200 to-white hover:opacity-80 transition-opacity">
                 🌙 MoonDrop
             </NuxtLink>
-        </div>
 
-        <NuxtLink v-if="isLoggedIn && userInfo?.roleId === 1" to="/admin"
-            class="ml-4 btn btn-sm h-9 border border-amber-400/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 text-amber-200 font-semibold tracking-wide shadow-[0_0_10px_rgba(251,191,36,0.2)] hover:shadow-[0_0_20px_rgba(251,191,36,0.4)] transition-all duration-300 rounded-lg group"
-            title="进入管理后台">
-            <svg class="w-4 h-4 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span class="hidden sm:inline">管理后台</span>
-        </NuxtLink>
+            <NuxtLink v-if="isLoggedIn && userInfo?.roleId === 1" to="/admin"
+                class="ml-2 btn btn-outline btn-info btn-sm" title="进入管理后台">
+                管理后台
+            </NuxtLink>
+        </div>
 
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1 gap-1">

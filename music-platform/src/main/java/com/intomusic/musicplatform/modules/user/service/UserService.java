@@ -28,7 +28,7 @@ import jakarta.annotation.Resource;
 import java.util.UUID;
 
 @Service
-@DS("user") // 使用 user_db 数据库
+@DS("user_db") // 使用 user_db 数据库
 public class UserService {
 
     @Autowired
@@ -315,7 +315,7 @@ public class UserService {
      * 6. 获取用户统计信息
      * 包括：创建的歌单数、喜欢的歌曲数
      */
-    @DS("music") // 歌单数据在 music 数据库中
+    @DS("music_db") // 歌单数据在 music 数据库中
     public Result<UserStatsVO> getUserStats(Long userId) {
         if (userId == null) {
             return Result.error("用户ID不能为空");
